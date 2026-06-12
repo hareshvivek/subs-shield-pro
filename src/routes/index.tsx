@@ -20,7 +20,7 @@ import { toast, Toaster } from "sonner";
 import { useTheme } from "@/lib/theme";
 import {
   seedSubscriptions, monthlyCost, daysUntil, fmtMoney, fmtDate,
-  type Subscription, type BillingCycle, type Splitter,
+  type Subscription, type BillingCycle,
 } from "@/lib/subscriptions";
 
 export const Route = createFileRoute("/")({
