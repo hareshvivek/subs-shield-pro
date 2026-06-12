@@ -147,6 +147,12 @@ function Dashboard() {
           <TimelineCalendar subs={subs} />
         </section>
 
+        {/* Virtual Shields */}
+        <section>
+          <SectionHeader title="Active Virtual Shields" subtitle="1 card active" />
+          <VirtualCardSection />
+        </section>
+
         {/* Subscriptions list */}
         <section>
           <SectionHeader title="Tracked subscriptions" subtitle={`${subs.length} services`} />
