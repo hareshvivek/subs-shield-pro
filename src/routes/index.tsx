@@ -627,6 +627,94 @@ function SettingBlock({
   );
 }
 
+/* ──────────────────────────── Virtual Shields ──────────────────────────── */
+
+function VirtualCardSection() {
+  return (
+    <Card className="bg-card border-border overflow-hidden">
+      <div className="p-5 sm:p-6 flex flex-col lg:flex-row gap-6 lg:items-start">
+        {/* Stylized mock card */}
+        <div className="relative shrink-0 mx-auto lg:mx-0">
+          <div
+            className="relative w-[320px] h-[200px] rounded-2xl p-5 flex flex-col justify-between text-white shadow-2xl overflow-hidden"
+            style={{
+              background: "linear-gradient(145deg, #0f172a 0%, #1e293b 40%, #0f172a 100%)",
+            }}
+          >
+            {/* Glow / sheen */}
+            <div className="absolute -top-16 -right-16 size-48 rounded-full bg-[#10b981] opacity-20 blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-10 -left-10 size-36 rounded-full bg-[#3b82f6] opacity-15 blur-2xl pointer-events-none" />
+
+            {/* Card top row */}
+            <div className="flex items-start justify-between relative z-10">
+              <div className="flex items-center gap-2">
+                <div className="size-8 rounded-lg shield-gradient flex items-center justify-center">
+                  <Shield className="size-4 text-primary-foreground" />
+                </div>
+                <span className="text-xs font-semibold tracking-widest uppercase opacity-80">SubShield</span>
+              </div>
+              <span className="text-[10px] uppercase tracking-wider opacity-60 font-medium">Virtual Debit</span>
+            </div>
+
+            {/* Card chip */}
+            <div className="relative z-10">
+              <div className="w-11 h-8 rounded-md border border-white/20 bg-yellow-500/20 flex items-center justify-center">
+                <div className="w-7 h-5 rounded-sm border border-white/10 bg-yellow-400/30" />
+              </div>
+            </div>
+
+            {/* Card bottom row */}
+            <div className="relative z-10 space-y-1">
+              <div className="text-[11px] uppercase tracking-wider opacity-60">Trial Protection Status</div>
+              <div className="text-lg font-semibold tracking-tight">Active ($0.00 Limit)</div>
+              <div className="flex items-center gap-1.5 text-[10px] opacity-60">
+                <span className="inline-block size-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                Monitoring 8 trials
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Info / description */}
+        <div className="flex-1 space-y-4">
+          <div className="flex items-start gap-3">
+            <div className="size-8 rounded-lg bg-accent flex items-center justify-center shrink-0 mt-0.5">
+              <CreditCard className="size-4 text-accent-foreground" />
+            </div>
+            <div>
+              <h3 className="font-medium">$0.00-limit virtual card</h3>
+              <p className="text-sm text-muted-foreground mt-0.5 leading-relaxed">
+                This virtual card is capped at $0.00 to automatically block charges and force-cancel the trial if you forget to do it manually.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-3">
+            <div className="size-8 rounded-lg bg-muted flex items-center justify-center shrink-0 mt-0.5">
+              <Info className="size-4 text-muted-foreground" />
+            </div>
+            <div>
+              <h3 className="font-medium">How it works</h3>
+              <p className="text-sm text-muted-foreground mt-0.5 leading-relaxed">
+                When you start a free trial, generate a unique virtual card number. Since the limit is $0.00, any attempt to bill you after the trial ends will be declined — giving you a safety net even if you miss the cancellation deadline.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap gap-2 pt-1">
+            <Button variant="outline" size="sm" className="gap-1.5" onClick={() => toast.success("New virtual card generated")}>
+              <Plus className="size-3.5" /> Generate new card
+            </Button>
+            <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground" onClick={() => toast("Viewing transaction history")}>
+              <ExternalLink className="size-3.5" /> View blocked attempts
+            </Button>
+          </div>
+        </div>
+      </div>
+    </Card>
+  );
+}
+
 /* ──────────────────────────── Brand Icons ──────────────────────────── */
 
 function GoogleIcon() {
