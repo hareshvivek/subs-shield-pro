@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import {
   Shield, Plus, Bell, Sun, Moon, ExternalLink, Calendar as CalIcon,
   TrendingUp, Users, ChevronDown, ChevronUp, Trash2, Mail, Sparkles,
-  AlertTriangle, Check,
+  AlertTriangle, Check, CreditCard, Info,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
