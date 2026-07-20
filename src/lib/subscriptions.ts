@@ -2,6 +2,9 @@ export type BillingCycle = "Weekly" | "Monthly" | "Annual";
 
 export type Splitter = { id: string; email: string; percent: number };
 
+export type SubSource = "email" | "manual";
+export type SubStatus = "active" | "auto-canceled";
+
 export type Subscription = {
   id: string;
   name: string;
@@ -15,6 +18,8 @@ export type Subscription = {
   color: string;
   initials: string;
   lastUsedDaysAgo: number;
+  source?: SubSource;
+  status?: SubStatus;
 };
 
 const today = new Date();
@@ -41,6 +46,8 @@ export const seedSubscriptions: Subscription[] = [
     color: "#E50914",
     initials: "N",
     lastUsedDaysAgo: 1,
+    source: "email",
+    status: "active",
   },
   {
     id: "2",
@@ -59,6 +66,8 @@ export const seedSubscriptions: Subscription[] = [
     color: "#1DB954",
     initials: "S",
     lastUsedDaysAgo: 0,
+    source: "email",
+    status: "active",
   },
   {
     id: "3",
@@ -101,6 +110,8 @@ export const seedSubscriptions: Subscription[] = [
     color: "#000000",
     initials: "NY",
     lastUsedDaysAgo: 22,
+    source: "email",
+    status: "auto-canceled",
   },
   {
     id: "6",
@@ -115,6 +126,8 @@ export const seedSubscriptions: Subscription[] = [
     color: "#10A37F",
     initials: "GP",
     lastUsedDaysAgo: 0,
+    source: "email",
+    status: "active",
   },
   {
     id: "7",
