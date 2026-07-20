@@ -46,6 +46,8 @@ export const seedSubscriptions: Subscription[] = [
     color: "#E50914",
     initials: "N",
     lastUsedDaysAgo: 1,
+    source: "email",
+    status: "active",
   },
   {
     id: "2",
