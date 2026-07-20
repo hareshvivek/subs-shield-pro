@@ -14,7 +14,156 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      app_user_connections: {
+        Row: {
+          connection_key_ciphertext: string
+          connector_id: string
+          created_at: string
+          id: string
+          last_sync_error: string | null
+          last_sync_status: string | null
+          last_synced_at: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          connection_key_ciphertext: string
+          connector_id: string
+          created_at?: string
+          id?: string
+          last_sync_error?: string | null
+          last_sync_status?: string | null
+          last_synced_at?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          connection_key_ciphertext?: string
+          connector_id?: string
+          created_at?: string
+          id?: string
+          last_sync_error?: string | null
+          last_sync_status?: string | null
+          last_synced_at?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      parsed_receipts: {
+        Row: {
+          amount: number | null
+          billing_cycle: string | null
+          currency: string | null
+          detected_status: string | null
+          gmail_message_id: string | null
+          id: string
+          merchant_detected: string | null
+          processed_at: string
+          raw_subject: string | null
+          user_id: string
+        }
+        Insert: {
+          amount?: number | null
+          billing_cycle?: string | null
+          currency?: string | null
+          detected_status?: string | null
+          gmail_message_id?: string | null
+          id?: string
+          merchant_detected?: string | null
+          processed_at?: string
+          raw_subject?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number | null
+          billing_cycle?: string | null
+          currency?: string | null
+          detected_status?: string | null
+          gmail_message_id?: string | null
+          id?: string
+          merchant_detected?: string | null
+          processed_at?: string
+          raw_subject?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      subscriptions: {
+        Row: {
+          billing_cycle: string
+          cancel_url: string | null
+          category: string | null
+          cost: number
+          created_at: string
+          currency: string
+          id: string
+          last_synced_at: string | null
+          next_renewal: string | null
+          service_name: string
+          shared: boolean
+          source: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          billing_cycle?: string
+          cancel_url?: string | null
+          category?: string | null
+          cost?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          last_synced_at?: string | null
+          next_renewal?: string | null
+          service_name: string
+          shared?: boolean
+          source?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          billing_cycle?: string
+          cancel_url?: string | null
+          category?: string | null
+          cost?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          last_synced_at?: string | null
+          next_renewal?: string | null
+          service_name?: string
+          shared?: boolean
+          source?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
