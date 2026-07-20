@@ -66,6 +66,8 @@ export const seedSubscriptions: Subscription[] = [
     color: "#1DB954",
     initials: "S",
     lastUsedDaysAgo: 0,
+    source: "email",
+    status: "active",
   },
   {
     id: "3",
@@ -108,6 +110,8 @@ export const seedSubscriptions: Subscription[] = [
     color: "#000000",
     initials: "NY",
     lastUsedDaysAgo: 22,
+    source: "email",
+    status: "auto-canceled",
   },
   {
     id: "6",
@@ -122,6 +126,8 @@ export const seedSubscriptions: Subscription[] = [
     color: "#10A37F",
     initials: "GP",
     lastUsedDaysAgo: 0,
+    source: "email",
+    status: "active",
   },
   {
     id: "7",
