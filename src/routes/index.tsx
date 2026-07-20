@@ -299,8 +299,22 @@ function SubscriptionRow({
           </div>
           <div className="min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="font-medium truncate">{sub.name}</span>
+              <span className={`font-medium truncate ${sub.status === "auto-canceled" ? "line-through opacity-60" : ""}`}>{sub.name}</span>
               <Badge variant="outline" className="text-[10px] py-0">{sub.category}</Badge>
+              {sub.source === "email" && (
+                <Badge variant="secondary" className="text-[10px] py-0 gap-1 bg-primary/10 text-primary border-primary/20">
+                  <Mail className="size-2.5" /> Synced via Email
+                </Badge>
+              )}
+              {sub.status === "auto-canceled" ? (
+                <Badge variant="secondary" className="text-[10px] py-0 gap-1 bg-muted text-muted-foreground">
+                  <Shield className="size-2.5" /> Auto-Canceled
+                </Badge>
+              ) : sub.source === "email" ? (
+                <Badge variant="secondary" className="text-[10px] py-0 gap-1 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20">
+                  <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" /> Active
+                </Badge>
+              ) : null}
               {inactive && (
                 <Badge variant="secondary" className="text-[10px] py-0 gap-1 text-warning">
                   <AlertTriangle className="size-2.5" /> Unused {sub.lastUsedDaysAgo}d
