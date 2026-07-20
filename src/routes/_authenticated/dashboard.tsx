@@ -23,7 +23,7 @@ import {
   type Subscription, type BillingCycle,
 } from "@/lib/subscriptions";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/_authenticated/")({
   head: () => ({
     meta: [
       { title: "SubShield — Private Subscription & Trial Tracker" },
