@@ -97,6 +97,9 @@ function Dashboard() {
               </SheetTrigger>
               <NotificationSettings />
             </Sheet>
+            <Button variant="ghost" size="icon" onClick={handleSignOut} aria-label="Sign out">
+              <LogOut className="size-4" />
+            </Button>
             <Dialog open={addOpen} onOpenChange={setAddOpen}>
               <DialogTrigger asChild>
                 <Button className="gap-1.5 shield-gradient text-primary-foreground hover:opacity-95">
