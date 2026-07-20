@@ -1,9 +1,10 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Shield, Plus, Bell, Sun, Moon, ExternalLink, Calendar as CalIcon,
   TrendingUp, Users, ChevronDown, ChevronUp, Trash2, Mail, Sparkles,
-  AlertTriangle, Check, CreditCard, Info,
+  AlertTriangle, Check, CreditCard, Info, RefreshCw, LogOut, Zap, Unplug,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -18,6 +19,12 @@ import { Slider } from "@/components/ui/slider";
 import { Separator } from "@/components/ui/separator";
 import { toast, Toaster } from "sonner";
 import { useTheme } from "@/lib/theme";
+import { supabase } from "@/integrations/supabase/client";
+import { connectAppUser } from "@/integrations/lovable/appUserConnectorClient";
+import {
+  startGmailConnect, saveGmailConnection, disconnectGmail,
+  getSyncStatus, listSyncedSubscriptions, syncGmailNow,
+} from "@/lib/gmailSync.functions";
 import {
   seedSubscriptions, monthlyCost, daysUntil, fmtMoney, fmtDate,
   type Subscription, type BillingCycle,
