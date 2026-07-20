@@ -2,6 +2,9 @@ export type BillingCycle = "Weekly" | "Monthly" | "Annual";
 
 export type Splitter = { id: string; email: string; percent: number };
 
+export type SubSource = "email" | "manual";
+export type SubStatus = "active" | "auto-canceled";
+
 export type Subscription = {
   id: string;
   name: string;
@@ -15,6 +18,8 @@ export type Subscription = {
   color: string;
   initials: string;
   lastUsedDaysAgo: number;
+  source?: SubSource;
+  status?: SubStatus;
 };
 
 const today = new Date();
