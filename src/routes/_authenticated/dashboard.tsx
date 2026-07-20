@@ -804,3 +804,154 @@ function OutlookIcon() {
     </svg>
   );
 }
+
+/* ──────────────────────────── Sync Panel ──────────────────────────── */
+
+const GATEWAY_BASE_URL = "https://connector-gateway.lovable.dev";
+
+function SyncPanel() {
+  const qc = useQueryClient();
+  const statusQuery = useQuery({
+    queryKey: ["gmail-sync-status"],
+    queryFn: () => getSyncStatus(),
+    refetchInterval: (q) => (q.state.data?.status === "syncing" ? 3000 : false),
+  });
+  const subsQuery = useQuery({
+    queryKey: ["synced-subs"],
+    queryFn: () => listSyncedSubscriptions(),
+    enabled: !!statusQuery.data?.connected,
+  });
+
+  const syncNow = useMutation({
+    mutationFn: () => syncGmailNow(),
+    onSuccess: (r) => {
+      toast.success(`Sync complete · ${r.created} new, ${r.updated} updated, ${r.canceled} canceled`);
+      qc.invalidateQueries({ queryKey: ["gmail-sync-status"] });
+      qc.invalidateQueries({ queryKey: ["synced-subs"] });
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Sync failed"),
+  });
+
+  const disconnect = useMutation({
+    mutationFn: () => disconnectGmail(),
+    onSuccess: () => {
+      toast("Gmail disconnected");
+      qc.invalidateQueries({ queryKey: ["gmail-sync-status"] });
+      qc.invalidateQueries({ queryKey: ["synced-subs"] });
+    },
+  });
+
+  async function handleConnect() {
+    const result = await connectAppUser({
+      connectorId: "google_mail",
+      gatewayBaseUrl: GATEWAY_BASE_URL,
+      start: async (targetOrigin) => await startGmailConnect({ data: { targetOrigin } }),
+    });
+    if (!result.success) {
+      toast.error(result.error ?? "Failed to connect");
+      return;
+    }
+    if (!result.connectionAPIKey) {
+      toast.error("Offline access not granted by workspace client.");
+      return;
+    }
+    await saveGmailConnection({ data: { connectionAPIKey: result.connectionAPIKey } });
+    toast.success("Gmail connected · syncing…");
+    qc.invalidateQueries({ queryKey: ["gmail-sync-status"] });
+    syncNow.mutate();
+  }
+
+  const st = statusQuery.data;
+  const isSyncing = st?.status === "syncing" || syncNow.isPending;
+
+  if (!st?.connected) {
+    return (
+      <Card className="p-6 bg-card border-border">
+        <div className="flex items-start gap-4">
+          <div className="size-11 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+            <Mail className="size-5" />
+          </div>
+          <div className="flex-1">
+            <h3 className="font-semibold text-lg">Connect Gmail to auto-track</h3>
+            <p className="text-sm text-muted-foreground mt-1 max-w-xl">
+              SubShield will scan receipts to detect new subscriptions, update renewal dates,
+              and automatically mark canceled plans. Read-only access · encrypted at rest.
+            </p>
+            <div className="mt-4 flex gap-2 flex-wrap">
+              <Button onClick={handleConnect} className="gap-2 shield-gradient text-primary-foreground">
+                <GoogleIcon /> Connect Gmail
+              </Button>
+              <Button variant="outline" disabled title="Coming soon">
+                <OutlookIcon /> <span className="ml-2">Outlook (soon)</span>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </Card>
+    );
+  }
+
+  const synced = subsQuery.data ?? [];
+  const active = synced.filter((s: any) => s.status === "active").length;
+  const canceled = synced.filter((s: any) => s.status === "canceled").length;
+
+  return (
+    <Card className="p-6 bg-card border-border">
+      <div className="flex items-start justify-between gap-4 flex-wrap">
+        <div className="flex items-start gap-4">
+          <div className="size-11 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+            <Zap className="size-5" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h3 className="font-semibold">Gmail connected</h3>
+              {st.status === "success" && <Badge variant="secondary" className="gap-1"><Check className="size-3" /> Synced</Badge>}
+              {isSyncing && <Badge className="gap-1 bg-primary/15 text-primary hover:bg-primary/20"><RefreshCw className="size-3 animate-spin" /> Syncing…</Badge>}
+              {st.status === "error" && <Badge variant="destructive" className="gap-1"><AlertTriangle className="size-3" /> Action required</Badge>}
+            </div>
+            <p className="text-sm text-muted-foreground mt-1">
+              {isSyncing
+                ? "Reading recent receipts…"
+                : st.lastSyncedAt
+                  ? `Last synced ${new Date(st.lastSyncedAt).toLocaleString()}`
+                  : "Not synced yet"}
+              {" · "}{active} active, {canceled} auto-canceled
+            </p>
+            {st.error && <p className="text-xs text-destructive mt-1">{st.error}</p>}
+          </div>
+        </div>
+        <div className="flex gap-2">
+          <Button size="sm" variant="outline" onClick={() => syncNow.mutate()} disabled={isSyncing} className="gap-1.5">
+            <RefreshCw className={`size-3.5 ${isSyncing ? "animate-spin" : ""}`} /> Sync now
+          </Button>
+          <Button size="sm" variant="ghost" onClick={() => disconnect.mutate()} className="gap-1.5 text-muted-foreground">
+            <Unplug className="size-3.5" /> Disconnect
+          </Button>
+        </div>
+      </div>
+
+      {synced.length > 0 && (
+        <div className="mt-5 pt-5 border-t border-border">
+          <div className="text-xs uppercase tracking-wider text-muted-foreground mb-3">Auto-detected from your inbox</div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+            {synced.slice(0, 6).map((s: any) => (
+              <div key={s.id} className="flex items-center justify-between gap-2 p-3 rounded-lg bg-muted/40 border border-border/50">
+                <div className="min-w-0">
+                  <div className="text-sm font-medium truncate">{s.service_name}</div>
+                  <div className="text-[11px] text-muted-foreground">
+                    {fmtMoney(Number(s.cost) || 0)} · {s.billing_cycle}
+                  </div>
+                </div>
+                {s.status === "canceled" ? (
+                  <Badge variant="outline" className="text-[10px]">Auto-canceled</Badge>
+                ) : (
+                  <Badge className="text-[10px] bg-primary/15 text-primary hover:bg-primary/20">Active</Badge>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </Card>
+  );
+}
