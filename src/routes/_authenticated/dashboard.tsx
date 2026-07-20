@@ -69,6 +69,12 @@ function Dashboard() {
   const updateSub = (id: string, patch: Partial<Subscription>) =>
     setSubs((p) => p.map((s) => (s.id === id ? { ...s, ...patch } : s)));
 
+  const navigate = useNavigate();
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    navigate({ to: "/auth" });
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Toaster theme={theme} position="top-right" />
