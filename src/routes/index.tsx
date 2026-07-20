@@ -455,6 +455,7 @@ function SharedSplitter({
 /* ──────────────────────────── Add Modal ──────────────────────────── */
 
 function AddSubscriptionModal({ onAdd }: { onAdd: (s: Subscription) => void }) {
+  const [manual, setManual] = useState(false);
   const [name, setName] = useState("");
   const [cost, setCost] = useState("");
   const [cycle, setCycle] = useState<BillingCycle>("Monthly");
@@ -463,7 +464,6 @@ function AddSubscriptionModal({ onAdd }: { onAdd: (s: Subscription) => void }) {
     return d.toISOString().slice(0, 10);
   });
   const [category, setCategory] = useState("Entertainment");
-  const [emailSync, setEmailSync] = useState(false);
 
   const palette = ["#10A37F", "#E50914", "#1DB954", "#0A84FF", "#7B61FF", "#FF6B35"];
   const submit = () => {
@@ -476,83 +476,116 @@ function AddSubscriptionModal({ onAdd }: { onAdd: (s: Subscription) => void }) {
       color: palette[Math.floor(Math.random() * palette.length)],
       initials: name.slice(0, 2).toUpperCase(),
       lastUsedDaysAgo: 0,
+      source: "manual",
+      status: "active",
     };
     onAdd(s);
+  };
+
+  const connect = (provider: "Gmail" | "Microsoft") => {
+    toast.success(`Connecting ${provider}…`, { description: "Scanning inbox for subscription receipts" });
   };
 
   return (
     <DialogContent className="sm:max-w-md">
       <DialogHeader>
         <DialogTitle className="text-display text-2xl">Track a subscription</DialogTitle>
-        <DialogDescription>Add manually or sync from your inbox — your data stays local.</DialogDescription>
+        <DialogDescription>
+          {manual ? "Enter details manually — your data stays local." : "Sync your inbox and SubShield handles the rest."}
+        </DialogDescription>
       </DialogHeader>
 
-      <div className="space-y-4">
-        <div className="space-y-1.5">
-          <Label htmlFor="name">Service name</Label>
-          <Input id="name" placeholder="Disney+" value={name} onChange={(e) => setName(e.target.value)} />
-        </div>
-        <div className="grid grid-cols-2 gap-3">
-          <div className="space-y-1.5">
-            <Label htmlFor="cost">Cost (USD)</Label>
-            <Input id="cost" type="number" step="0.01" placeholder="9.99" value={cost} onChange={(e) => setCost(e.target.value)} />
-          </div>
-          <div className="space-y-1.5">
-            <Label>Billing cycle</Label>
-            <Select value={cycle} onValueChange={(v) => setCycle(v as BillingCycle)}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Weekly">Weekly</SelectItem>
-                <SelectItem value="Monthly">Monthly</SelectItem>
-                <SelectItem value="Annual">Annual</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-        <div className="grid grid-cols-2 gap-3">
-          <div className="space-y-1.5">
-            <Label htmlFor="date">Next renewal</Label>
-            <Input id="date" type="date" value={date} onChange={(e) => setDate(e.target.value)} />
-          </div>
-          <div className="space-y-1.5">
-            <Label>Category</Label>
-            <Select value={category} onValueChange={setCategory}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                {CATEGORIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        <Separator />
-
-        <div className="rounded-xl border border-border p-3 space-y-3 bg-muted/30">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <Label className="flex items-center gap-1.5"><Mail className="size-3.5" /> Connect Email Sync</Label>
-              <p className="text-xs text-muted-foreground mt-0.5">Auto-detect new subscriptions from receipts.</p>
+      {!manual ? (
+        <div className="space-y-4">
+          <div className="rounded-2xl border border-border p-5 bg-gradient-to-br from-accent/40 to-muted/30 space-y-4">
+            <div className="flex items-start gap-3">
+              <div className="size-10 rounded-xl shield-gradient flex items-center justify-center shrink-0">
+                <Mail className="size-5 text-primary-foreground" />
+              </div>
+              <div>
+                <div className="font-semibold">Connect Inbox to Auto-Track</div>
+                <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
+                  SubShield will automatically detect new subscriptions, update renewal dates from digital receipts, and automatically remove canceled plans.
+                </p>
+              </div>
             </div>
-            <Switch checked={emailSync} onCheckedChange={setEmailSync} />
-          </div>
-          {emailSync && (
-            <div className="grid grid-cols-2 gap-2">
-              <Button type="button" variant="outline" className="gap-2 bg-background" onClick={() => toast("Mock OAuth flow")}>
-                <GoogleIcon /> Google
+            <div className="grid grid-cols-1 gap-2">
+              <Button type="button" variant="outline" className="gap-2 bg-background justify-start h-11" onClick={() => connect("Gmail")}>
+                <GoogleIcon /> Connect Gmail
               </Button>
-              <Button type="button" variant="outline" className="gap-2 bg-background" onClick={() => toast("Mock OAuth flow")}>
-                <OutlookIcon /> Outlook
+              <Button type="button" variant="outline" className="gap-2 bg-background justify-start h-11" onClick={() => connect("Microsoft")}>
+                <OutlookIcon /> Connect Microsoft
               </Button>
             </div>
-          )}
-        </div>
-      </div>
+            <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
+              <Shield className="size-3" /> Read-only access · encrypted · revoke anytime
+            </div>
+          </div>
 
-      <DialogFooter>
-        <Button onClick={submit} className="shield-gradient text-primary-foreground w-full sm:w-auto">
-          Add to Shield
-        </Button>
-      </DialogFooter>
+          <button
+            type="button"
+            onClick={() => setManual(true)}
+            className="w-full text-xs text-muted-foreground hover:text-foreground underline underline-offset-4 py-1"
+          >
+            Or enter details manually
+          </button>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          <div className="space-y-1.5">
+            <Label htmlFor="name">Service name</Label>
+            <Input id="name" placeholder="Disney+" value={name} onChange={(e) => setName(e.target.value)} />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <Label htmlFor="cost">Cost (USD)</Label>
+              <Input id="cost" type="number" step="0.01" placeholder="9.99" value={cost} onChange={(e) => setCost(e.target.value)} />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Billing cycle</Label>
+              <Select value={cycle} onValueChange={(v) => setCycle(v as BillingCycle)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Weekly">Weekly</SelectItem>
+                  <SelectItem value="Monthly">Monthly</SelectItem>
+                  <SelectItem value="Annual">Annual</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <Label htmlFor="date">Next renewal</Label>
+              <Input id="date" type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Category</Label>
+              <Select value={category} onValueChange={setCategory}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {CATEGORIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setManual(false)}
+            className="w-full text-xs text-muted-foreground hover:text-foreground underline underline-offset-4 py-1"
+          >
+            ← Back to inbox sync
+          </button>
+        </div>
+      )}
+
+      {manual && (
+        <DialogFooter>
+          <Button onClick={submit} className="shield-gradient text-primary-foreground w-full sm:w-auto">
+            Add to Shield
+          </Button>
+        </DialogFooter>
+      )}
     </DialogContent>
   );
 }
