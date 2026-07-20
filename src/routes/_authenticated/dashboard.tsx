@@ -157,6 +157,12 @@ function Dashboard() {
           </div>
         </section>
 
+        {/* Email sync */}
+        <section>
+          <SectionHeader title="Email auto-sync" subtitle="Automatically detect subscriptions from receipts" />
+          <SyncPanel />
+        </section>
+
         {/* Timeline */}
         <section>
           <SectionHeader title="Upcoming renewals" subtitle="Next 14 days" />
